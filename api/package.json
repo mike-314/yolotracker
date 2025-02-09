@@ -1,5 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "mssql": "^8.1.0"
+  }
 }
