@@ -33,10 +33,14 @@ module.exports = async function (context, req) {
     } catch (err) {
         context.log.error("Error saving feedback:", err);
 
-        // Respond with an error
+        // Respond with the exact error for debugging
         context.res = {
             status: 500,
-            body: { message: "Failed to save feedback." }
+            body: {
+                message: "Failed to save feedback.",
+                error: err.message,   // Include error message
+                stack: err.stack      // Include stack trace
+            }
         };
     }
 };
