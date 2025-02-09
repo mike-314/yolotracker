@@ -44,6 +44,11 @@ onMounted(() => {
             ℹ️ About
           </router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/feedback" class="nav-link" :class="isDarkMode ? 'text-white' : 'text-dark'">
+            📩 Feedback
+          </router-link>
+        </li>
       </ul>
 
       <!-- Dark Mode Toggle Button -->
