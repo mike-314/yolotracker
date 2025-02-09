@@ -1,8 +1,21 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: "/",
-})
+  base: "/", // Update this if deploying to a subdirectory
+  resolve: {
+    alias: {
+      "@": "/src", // Optional, for cleaner imports
+    },
+  },
+  build: {
+    sourcemap: false,
+    outDir: "dist",
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
+});
