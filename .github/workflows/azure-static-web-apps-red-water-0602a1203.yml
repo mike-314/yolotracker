@@ -20,11 +20,7 @@ jobs:
           submodules: true
           lfs: false
 
-      # ✅ New: Cleanup step to prevent large deployment
-      - name: Clean API Folder to Reduce Deployment Size
-        run: |
-          rm -rf api/node_modules
-          rm -rf api/.oryx_prod_node_modules
+      
 
       - name: Build And Deploy
         id: builddeploy
