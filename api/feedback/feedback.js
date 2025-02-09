@@ -19,7 +19,7 @@ module.exports = async function (context, req) {
         await sql.connect(config);
 
         // Insert feedback into the database
-        const result = await sql.query(
+        await sql.query(
             `INSERT INTO Feedback (FeedbackText) VALUES ('${feedbackText}')`
         );
 
@@ -28,19 +28,22 @@ module.exports = async function (context, req) {
         // Respond with success
         context.res = {
             status: 200,
-            body: { message: "Feedback saved successfully!" }
+            body: JSON.stringify({ message: "Feedback saved successfully!" })
         };
     } catch (err) {
-        context.log.error("Error saving feedback:", err);
+        context.log.error("Error saving feedback:", {
+            message: err.message,
+            stack: err.stack
+        });
 
-        // Respond with the exact error for debugging
+        // Respond with an error as valid JSON
         context.res = {
             status: 500,
-            body: {
+            body: JSON.stringify({
                 message: "Failed to save feedback.",
-                error: err.message,   // Include error message
-                stack: err.stack      // Include stack trace
-            }
+                error: err.message,
+                stack: err.stack
+            })
         };
     }
 };
