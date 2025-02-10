@@ -4,7 +4,7 @@
     <div class="text-center">
       <h1 class="text-primary">Aplikacje w chmurze Azure</h1>
       <p class="text-muted">
-        A college project exploring Azure tools that can be in building VUE app that can help even if you're a procrastinator. Welcome to YOLOtracker! Just do it!
+        A college project exploring Azure tools that can be used in building apps that can help even if you're a procrastinator. Welcome to YOLOtracker! Just do it!
       </p>
     </div>
 
@@ -19,7 +19,7 @@
           <strong>Azure Blob Storage</strong>: Store files, images, or data securely and scalably.
         </li>
         <li class="list-group-item">
-          <strong>Azure Analytics</strong>: Use tools like Synapse and Power BI to analyze procrastination habits (just kidding, but imagine!).
+          <strong>Azure SQL</strong>: Relational dbs.
         </li>
         <li class="list-group-item">
           <strong>Azure Static Web Apps</strong>: Deploy this very project with just a few clicks!
