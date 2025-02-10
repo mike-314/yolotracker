@@ -26,14 +26,11 @@ module.exports = async function (context, req) {
 
         // Database connection config
         const config = {
-            user: process.env.DB_USER, // SQL username
-            password: process.env.DB_PASS, // SQL password
-            server: process.env.DB_SERVER, // SQL server (e.g., xyz.database.windows.net)
-            database: process.env.DB_NAME, // Database name
-            options: {
-                encrypt: true, // Use encryption for Azure SQL
-                enableArithAbort: true
-            }
+            user: "mike313", // SQL username
+            password: "Test1234", // SQL password
+            server: "sqldbserveryolotrmk.database.windows.net", // SQL server (e.g., xyz.database.windows.net)
+            database: "Feedback", // Database name
+            
         };
 
         debugMessages.push("⏳ Attempting to connect to the database...");
