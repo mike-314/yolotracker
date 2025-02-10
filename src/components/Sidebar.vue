@@ -1,84 +1,61 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-// State for theme mode
-const isDarkMode = ref(true);
+const audioSrc = ref(""); // MP3 URL
+const audio = ref(null); // Audio element
 
-// Function to toggle dark/light mode
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value;
-
-  // Change Bootstrap theme
-  document.body.setAttribute("data-bs-theme", isDarkMode.value ? "dark" : "light");
-
-  // Store user preference
-  localStorage.setItem("theme", isDarkMode.value ? "dark" : "light");
+// Fetch MP3 URL from the Azure Function
+const fetchAudioSource = async () => {
+  try {
+    const response = await fetch("/api/audio");
+    const data = await response.json();
+    audioSrc.value = data.audioSource;
+    console.log("🎵 Loaded audio source:", audioSrc.value);
+  } catch (error) {
+    console.error("❌ Failed to fetch audio source:", error);
+  }
 };
 
-// Load user's theme preference on mount
-onMounted(() => {
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    isDarkMode.value = savedTheme === "dark";
-    document.body.setAttribute("data-bs-theme", savedTheme);
+// Play/Pause Audio
+const toggleAudio = () => {
+  if (audio.value.paused) {
+    audio.value.play();
+  } else {
+    audio.value.pause();
   }
-});
+};
+
+onMounted(fetchAudioSource);
 </script>
 
 <template>
   <div class="d-flex">
-    <!-- Sidebar -->
-    <div
-      class="sidebar p-3"
-      :class="isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'"
-    >
+    <div class="sidebar p-3">
       <h3>Menu</h3>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link to="/track" class="nav-link" :class="isDarkMode ? 'text-white' : 'text-dark'">
-            📊 Track
-          </router-link>
+          <router-link to="/track" class="nav-link">📊 Track</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/about" class="nav-link" :class="isDarkMode ? 'text-white' : 'text-dark'">
-            ℹ️ About
-          </router-link>
+          <router-link to="/about" class="nav-link">ℹ️ About</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/feedback" class="nav-link" :class="isDarkMode ? 'text-white' : 'text-dark'">
-            📩 Feedback
-          </router-link>
+          <router-link to="/feedback" class="nav-link">📩 Feedback</router-link>
         </li>
       </ul>
 
-      <!-- Dark Mode Toggle Button -->
+      <!-- 🎶 Music Play Button -->
       <div class="mt-3">
-        <button class="btn w-100" :class="isDarkMode ? 'btn-outline-light' : 'btn-outline-dark'" @click="toggleTheme">
-          {{ isDarkMode ? "☀ Light Mode" : "🌙 Dark Mode" }}
+        <button class="btn w-100 btn-primary" @click="toggleAudio">
+          🎵 {{ audio && audio.paused ? "Play Music" : "Pause Music" }}
         </button>
+        <!-- Hidden Audio Element -->
+        <audio ref="audio" :src="audioSrc"></audio>
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="content p-4">
       <router-view></router-view>
     </div>
   </div>
 </template>
-
-<style>
-/* Sidebar styling */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding-top: 20px;
-}
-
-.content {
-  margin-left: 260px;
-  width: 100%;
-}
-</style>
