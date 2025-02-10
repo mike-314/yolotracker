@@ -11,7 +11,7 @@ module.exports = async function (context, req) {
             sql = require("mssql");
             debugMessages.push("✅ 'mssql' module loaded successfully.");
         } catch (error) {
-            debugMessages.push("❌ ERROR: Failed to load 'mssql' module.");
+            debugMessages.push(`❌ ERROR: Failed to load 'mssql' module.`);
             debugMessages.push(`Message: ${error.message}`);
             debugMessages.push(`Stack: ${error.stack}`);
 
@@ -25,7 +25,7 @@ module.exports = async function (context, req) {
             return;
         }
 
-        // ✅ Use JDBC-style connection settings
+        // ✅ Database Connection Config
         const config = {
             server: "sqldbserveryolotrmk.database.windows.net",
             database: "yolotracker_mk",
@@ -45,20 +45,43 @@ module.exports = async function (context, req) {
         };
 
         debugMessages.push("⏳ Attempting to connect to the database...");
-
         await sql.connect(config);
-
         debugMessages.push("✅ Connection successful.");
+
+        // ✅ Validate Request Body
+        const feedbackText = req.body?.feedback;
+        if (!feedbackText || feedbackText.trim() === "") {
+            debugMessages.push("❌ ERROR: No feedback provided.");
+            context.res = {
+                status: 400,
+                body: JSON.stringify({
+                    message: "Feedback cannot be empty.",
+                    debug: debugMessages.join("\n")
+                })
+            };
+            return;
+        }
+
+        debugMessages.push(`⏳ Inserting feedback: "${feedbackText}" into the database...`);
+
+        // ✅ Insert Feedback into the Database Using a Parameterized Query
+        const request = new sql.Request();
+        request.input("feedbackText", sql.NVarChar, feedbackText);
+        await request.query(`
+            INSERT INTO Feedback (FeedbackText) VALUES (@feedbackText)
+        `);
+
+        debugMessages.push("✅ Feedback inserted successfully!");
 
         context.res = {
             status: 200,
             body: JSON.stringify({
-                message: "Database connection successful!",
+                message: "Feedback saved successfully!",
                 debug: debugMessages.join("\n")
             })
         };
     } catch (err) {
-        debugMessages.push("❌ ERROR: Failed to connect to the database.");
+        debugMessages.push("❌ ERROR: Failed to insert feedback.");
         debugMessages.push(`Message: ${err.message}`);
         debugMessages.push(`Code: ${err.code || "UNKNOWN_ERROR"}`);
         debugMessages.push(`Stack: ${err.stack}`);
@@ -66,7 +89,7 @@ module.exports = async function (context, req) {
         context.res = {
             status: 500,
             body: JSON.stringify({
-                message: "Failed to connect to the database.",
+                message: "Failed to save feedback.",
                 debug: debugMessages.join("\n")
             })
         };
