@@ -1,29 +1,44 @@
-let sql;
-try {
-    sql = require("mssql");
-    console.log("✅ 'mssql' module loaded successfully.");
-} catch (error) {
-    console.error("❌ ERROR: Failed to load 'mssql' module.");
-    console.error(error.message);
-}
-
-const config = {
-    user: process.env.DB_USER, // SQL username
-    password: process.env.DB_PASS, // SQL password
-    server: process.env.DB_SERVER, // SQL server (e.g., xyz.database.windows.net)
-    database: process.env.DB_NAME, // Database name
-    options: {
-        encrypt: true, // Use encryption for Azure SQL
-        enableArithAbort: true
-    }
-};
-
 module.exports = async function (context, req) {
     let debugMessages = [];
 
     try {
+        debugMessages.push("⏳ Attempting to load 'mssql' module...");
+
+        // Try requiring 'mssql' inside the function
+        let sql;
+        try {
+            sql = require("mssql");
+            debugMessages.push("✅ 'mssql' module loaded successfully.");
+        } catch (error) {
+            debugMessages.push("❌ ERROR: Failed to load 'mssql' module.");
+            debugMessages.push(`Message: ${error.message}`);
+            debugMessages.push(`Stack: ${error.stack}`);
+
+            context.res = {
+                status: 500,
+                body: JSON.stringify({
+                    message: "Failed to load 'mssql' module.",
+                    debug: debugMessages.join("\n")
+                })
+            };
+            return; // Exit the function early
+        }
+
+        // Database connection config
+        const config = {
+            user: process.env.DB_USER, // SQL username
+            password: process.env.DB_PASS, // SQL password
+            server: process.env.DB_SERVER, // SQL server (e.g., xyz.database.windows.net)
+            database: process.env.DB_NAME, // Database name
+            options: {
+                encrypt: true, // Use encryption for Azure SQL
+                enableArithAbort: true
+            }
+        };
+
         debugMessages.push("⏳ Attempting to connect to the database...");
-        
+
+        // Attempt to connect
         await sql.connect(config);
 
         debugMessages.push("✅ Connection successful.");
