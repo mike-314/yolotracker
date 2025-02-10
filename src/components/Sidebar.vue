@@ -6,8 +6,16 @@ const isDarkMode = ref(true);
 const audio = ref(null);
 
 
-const audioSrc = "https://azuremkdevst.blob.core.windows.net/audio/Risen_Soundtrack_02_The_Beach.m4a";
-
+const fetchAudioSource = async () => {
+  try {
+    const response = await fetch("/api/audio");
+    const data = await response.json();
+    audioSrc.value = data.audioSource; 
+    console.log("🎵 Loaded audio source:", audioSrc.value);
+  } catch (error) {
+    console.error("❌ Failed to fetch audio source:", error);
+  }
+};
 // Function to toggle dark/light mode
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
