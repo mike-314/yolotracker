@@ -1,10 +1,11 @@
+const sql = require("mssql");
+
 module.exports = async function (context, req) {
     let debugMessages = [];
 
     try {
         debugMessages.push("⏳ Attempting to load 'mssql' module...");
 
-        // Try requiring 'mssql' inside the function
         let sql;
         try {
             sql = require("mssql");
@@ -21,21 +22,30 @@ module.exports = async function (context, req) {
                     debug: debugMessages.join("\n")
                 })
             };
-            return; // Exit the function early
+            return;
         }
 
-        // Database connection config
+        // ✅ Use JDBC-style connection settings
         const config = {
-            user: "mike313", // SQL username
-            password: "Test1234", // SQL password
-            server: "sqldbserveryolotrmk.database.windows.net", // SQL server (e.g., xyz.database.windows.net)
-            database: "Feedback", // Database name
-            
+            server: "sqldbserveryolotrmk.database.windows.net",
+            database: "yolotracker_mk",
+            authentication: {
+                type: "default",
+                options: {
+                    userName: "mike313@sqldbserveryolotrmk",
+                    password: "Test1234"
+                }
+            },
+            options: {
+                encrypt: true,
+                trustServerCertificate: false,
+                loginTimeout: 30,
+                hostNameInCertificate: "*.database.windows.net"
+            }
         };
 
         debugMessages.push("⏳ Attempting to connect to the database...");
 
-        // Attempt to connect
         await sql.connect(config);
 
         debugMessages.push("✅ Connection successful.");
