@@ -25,15 +25,14 @@ module.exports = async function (context, req) {
             return;
         }
 
-        // ✅ Database Connection Config
         const config = {
-            server: "sqldbserveryolotrmk.database.windows.net",
-            database: "yolotracker_mk",
+            server: process.env.DB_SERVER, 
+            database: process.env.DB_NAME,
             authentication: {
                 type: "default",
                 options: {
-                    userName: "mike313@sqldbserveryolotrmk",
-                    password: "Test1234"
+                    userName: process.env.DB_USER, 
+                    password: process.env.DB_PASS 
                 }
             },
             options: {
