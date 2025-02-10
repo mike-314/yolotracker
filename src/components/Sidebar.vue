@@ -1,21 +1,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-// State for theme mode
+// Theme mode state
 const isDarkMode = ref(true);
 const audio = ref(null);
+const audioSrc = ref(""); // ✅ Make audio URL reactive
 
-
+// Fetch MP3 URL from the serverless function
 const fetchAudioSource = async () => {
   try {
     const response = await fetch("/api/audio");
     const data = await response.json();
-    audioSrc.value = data.audioSource; 
+    audioSrc.value = data.audioSource;
     console.log("🎵 Loaded audio source:", audioSrc.value);
   } catch (error) {
     console.error("❌ Failed to fetch audio source:", error);
   }
 };
+
 // Function to toggle dark/light mode
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
@@ -23,7 +25,7 @@ const toggleTheme = () => {
   localStorage.setItem("theme", isDarkMode.value ? "dark" : "light");
 };
 
-// Function to Play/Pause the Audio
+// Function to play/pause the audio
 const toggleAudio = () => {
   if (audio.value.paused) {
     audio.value.play();
@@ -32,8 +34,9 @@ const toggleAudio = () => {
   }
 };
 
-// Load user's theme preference on mount
+// Load user's theme preference & fetch audio URL on mount
 onMounted(() => {
+  fetchAudioSource(); // ✅ Call function here
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     isDarkMode.value = savedTheme === "dark";
@@ -67,11 +70,11 @@ onMounted(() => {
 
       <!-- 🎵 Music Play Button -->
       <div class="mt-3">
-        <button class="btn w-100 btn-primary" @click="toggleAudio">
+        <button class="btn w-100 btn-primary" @click="toggleAudio" :disabled="!audioSrc">
           🎶 {{ audio && audio.paused ? "Play Music" : "Pause Music" }}
         </button>
-        <!-- Hidden Audio Element -->
-        <audio ref="audio" :src="audioSrc"></audio>
+        <!-- Hidden Audio Element (Only renders when audioSrc is available) -->
+        <audio ref="audio" :src="audioSrc" v-if="audioSrc"></audio>
       </div>
 
       <!-- Dark Mode Toggle Button -->
